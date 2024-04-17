@@ -4,7 +4,8 @@ pragma solidity ^0.8.24;
 contract AxelrodGame {
     address public player1;
     address public player2;
-    uint public constant betMin = 1; // Mise minimale = 1 finney 
+    uint256 public constant FINNEY = 1e15; // 1 finney en wei
+    uint256 public constant betMin = FINNEY; // Mise minimale = 1 finney     
     uint256 public constant revealTimeout=600;
     uint256 public initialBet;
 
@@ -20,7 +21,7 @@ contract AxelrodGame {
     event GameStarted(address player1, address player2, uint256 bet);
     event MoveSubmitted(address player);
     event GameEnded(address winner, uint256 winnings);
-
+    constructor() payable {}
 
     function register() external payable {
         require(player1 == address(0) || player2 == address(0), "Game is full");
