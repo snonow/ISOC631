@@ -1,12 +1,12 @@
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.19;
 
 contract AxelrodGame {
     // Variables d'état
-    uint public constant BET_MIN = 1 finney; // Mise minimale
+    uint public constant BET_MIN = 1; // Mise minimale
     uint public constant REVEAL_TIMEOUT = 600; // 10 minutes en secondes
     address public player1;
     address public player2;
-    bytes32 public hashedMovePlayer1;
+    bytes32 public hashedMovePlayer1; 
     bytes32 public hashedMovePlayer2;
     uint public betAmountPlayer1;
     uint public betAmountPlayer2;
