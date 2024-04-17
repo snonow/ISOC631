@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.24;
 
 contract AxelrodGame {
     address public player1;
     address public player2;
-    uint256 public betMin;
-    uint256 public revealTimeout;
+    uint public constant betMin = 1; // Mise minimale = 1 finney 
+    uint256 public constant revealTimeout=600;
     uint256 public initialBet;
 
     enum Move {Cooperate, Defect}
@@ -21,10 +21,6 @@ contract AxelrodGame {
     event MoveSubmitted(address player);
     event GameEnded(address winner, uint256 winnings);
 
-    constructor(uint256 _betMin, uint256 _revealTimeout) {
-        betMin = _betMin;
-        revealTimeout = _revealTimeout;
-    }
 
     function register() external payable {
         require(player1 == address(0) || player2 == address(0), "Game is full");
