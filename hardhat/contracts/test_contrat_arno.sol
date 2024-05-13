@@ -2,12 +2,12 @@
 pragma solidity ^0.8.24;
 
 contract AxelrodGame {
-    address public player1;
-    address public player2;
-    uint256 public constant FINNEY = 1e15; // 1 finney en wei
-    uint256 public constant betMin = FINNEY; // Mise minimale = 1 finney     
-    uint256 public constant revealTimeout=600;
-    uint256 public initialBet;
+    address private player1;
+    address private player2;
+    uint256 private constant FINNEY = 1e15; // 1 finney en wei
+    uint256 private constant betMin = FINNEY; // Mise minimale = 1 finney     
+    uint256 private constant revealTimeout=600;
+    uint256 private initialBet;
 
     enum Move {Cooperate, Defect}
     struct Player {
@@ -16,7 +16,7 @@ contract AxelrodGame {
         uint256 bet;
     }
 
-    mapping(address => Player) public players;
+    mapping(address => Player) private players;
 
     event GameStarted(address player1, address player2, uint256 bet);
     event MoveSubmitted(address player);
@@ -46,44 +46,42 @@ contract AxelrodGame {
         require(players[msg.sender].moveHash == bytes32(0), "Move already submitted");
         players[msg.sender].moveHash = _moveHash;
         emit MoveSubmitted(msg.sender);
-
-        if (players[player1].moveHash != bytes32(0) && players[player2].moveHash != bytes32(0)) {
-            revealMoves();
-        }
     }
 
-    function revealMove(bytes32 _password) external {
+    function revealMove(string memory _password)  external {
         Player storage player = players[msg.sender];
         require(player.moveHash != bytes32(0), "Move not submitted");
         require(!player.revealed, "Move already revealed");
         require(keccak256(abi.encodePacked(_password)) == player.moveHash, "Invalid password");
-
         player.revealed = true;
-        if (players[player1].revealed && players[player2].revealed) {
-            revealMoves();
-        }
+        
     }
 
-    function revealMoves() private {
-        Player storage player1Data = players[player1];
-        Player storage player2Data = players[player2];
+    function getOutcome() external {
+        
+        if (players[player1].revealed && players[player2].revealed) {
+           
+            Player storage player1Data = players[player1];
+            Player storage player2Data = players[player2];
 
-        bytes32 player1MoveHash = player1Data.moveHash;
-        bytes32 player2MoveHash = player2Data.moveHash;
+            bytes32 player1MoveHash = player1Data.moveHash;
+            bytes32 player2MoveHash = player2Data.moveHash;
 
-        require(player1MoveHash != bytes32(0) && player2MoveHash != bytes32(0), "Moves not submitted");
+            require(player1MoveHash != bytes32(0) && player2MoveHash != bytes32(0), "Moves not submitted");
 
-        Move player1Move = Move(uint8(uint256(keccak256(abi.encodePacked(player1MoveHash, address(this)))) % 2));
-        Move player2Move = Move(uint8(uint256(keccak256(abi.encodePacked(player2MoveHash, address(this)))) % 2));
+            Move player1Move = Move(uint8(uint256(keccak256(abi.encodePacked(player1MoveHash, address(this)))) % 2));
+            Move player2Move = Move(uint8(uint256(keccak256(abi.encodePacked(player2MoveHash, address(this)))) % 2));
 
-        if (player1Move == Move.Cooperate && player2Move == Move.Cooperate) {
-            payOut(player1, player2, initialBet, initialBet);
-        } else if (player1Move == Move.Cooperate && player2Move == Move.Defect) {
-            payOut(player2, player1, initialBet * 2, 0);
-        } else if (player1Move == Move.Defect && player2Move == Move.Cooperate) {
-            payOut(player1, player2, 0, initialBet * 2);
-        } else {
-            payOut(address(0), address(0), 0, 0); // Both defect, no winner
+            if (player1Move == Move.Cooperate && player2Move == Move.Cooperate) {
+                payOut(player1, player2, initialBet, initialBet);
+            } else if (player1Move == Move.Cooperate && player2Move == Move.Defect) {
+                payOut(player2, player1, initialBet * 2, 0);
+            } else if (player1Move == Move.Defect && player2Move == Move.Cooperate) {
+                payOut(player1, player2,  initialBet * 2,0);
+            } else {
+                payOut(address(0), address(0), 0, 0); // Both defect, no winner
+            }
+
         }
     }
 
@@ -109,5 +107,44 @@ contract AxelrodGame {
 
     function getContractBalance() external view returns (uint256) {
         return address(this).balance;
+    }
+    function whoAmI() public view returns (uint8) {
+        if (msg.sender == player1) {
+            return 1;
+        } else if (msg.sender == player2) {
+            return 2;
+        } else {
+            return 0;
+        }
+    }
+
+    function bothPlayed() public view returns (bool) {
+        return (players[player1].moveHash != bytes32(0) && players[player2].moveHash != bytes32(0));
+    }
+
+    function bothRevealed() public view returns (bool) {
+        return (players[player1].revealed && players[player2].revealed);
+    }
+
+    function revealTimeLeft() public view returns (uint256) {
+        if (players[player1].moveHash == bytes32(0) || players[player2].moveHash == bytes32(0)) {
+            return revealTimeout; // Le timer n'a pas encore démarré
+        } else {
+            uint256 timeElapsed = block.timestamp - revealTimeout; // Temps écoulé depuis le début de la révélation
+            if (timeElapsed < 0) {
+                return revealTimeout + timeElapsed; // Temps restant avant la fin de la révélation
+            } else {
+                return 0; // La phase de révélation est terminée
+            }
+        }
+    }
+
+   function avoir_movehash(string memory _password) external pure returns (bytes32) {
+  
+    
+        // Calculer le hachage SHA256 de la chaîne concaténée
+        bytes32 moveHash = keccak256(abi.encodePacked(_password));
+
+        return moveHash;
     }
 }
