@@ -42,3 +42,13 @@ L'interaction avec le jeu se fait à travers une API REST. Les endpoints implém
 ## Auteur
 
 Ce projet a été développé par DEGOUEY Corentin - SOLDAN Maxens - RENAND Baptiste - BERCIER Thomas - WHILLEM Arno.
+
+
+## Deployer le  contrat 
+Dans l'invité de commande : 
+lancer le noeud local: npx hardhat node
+compile le contrat :npx hardhat compile
+deployer le contrat : yarn hardhat ignition deploy ./ignition/modules/AxelrodGame_contrat.js --network localhost
+
+recupérer l'adresse du contrat et la modifié dans le script API_script.py
+lancer l'api : uvicorn API_script:app --reload

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-contract AxelrodGame {
+contract AxelrodGame_contrat {
     address private player1;
     address private player2;
     uint256 private constant FINNEY = 1e15; // 1 finney en wei

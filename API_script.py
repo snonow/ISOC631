@@ -16,8 +16,16 @@ class MoveSubmission(BaseModel):
     moveHash: str
 
 
-# Adresse du contrat et ABI (Application Binary Interface)
-contract_address = "0xE73E34dc58E839eF58B64B3FC81F37BC864a9065"
+# Adresse du contrat et ABI (Application Binary Interface) 
+
+###############################################################
+#    modifié avec l'adresse du contrat une fois compilé
+contract_address = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+###############################################################
+
+
+
+
 contract_abi = [
     {
 				"inputs": [
