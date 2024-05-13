@@ -1,7 +1,8 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 from sympy import false
 from web3 import Web3
+
 
 app = FastAPI()
 
@@ -16,7 +17,7 @@ class MoveSubmission(BaseModel):
 
 
 # Adresse du contrat et ABI (Application Binary Interface)
-contract_address = "0x43D218197E8c5FBC0527769821503660861c7045"
+contract_address = "0xE73E34dc58E839eF58B64B3FC81F37BC864a9065"
 contract_abi = [
     {
 				"inputs": [
@@ -240,11 +241,16 @@ contract = w3.eth.contract(address=contract_address, abi=contract_abi)
 
 
 # Endpoint pour enregistrer un joueur
-@app.post("/register/{player_address}")
-async def register(player_address: str, bet_amount: int):
+@app.get("/register")
+async def register(player_address: str = Query(..., title="Player Address", description="The address of the player"),
+                   bet_amount: int = Query(..., title="Bet Amount", description="The amount of the bet in wei")):
     try:
-        # Convertir l'adresse en format checksum pour Ethereum
-        player_address = w3.toChecksumAddress(player_address)
+    
+
+
+        # Vérifier si le montant de la mise est suffisant
+        if bet_amount < contract.functions.betMin().call():
+            raise ValueError("Bet amount is less than minimum bet required")
 
         # Enregistrer le joueur en appelant la fonction register du contrat Ethereum
         tx_hash = contract.functions.register().transact({'from': player_address, 'value': bet_amount})
@@ -253,27 +259,11 @@ async def register(player_address: str, bet_amount: int):
         w3.eth.waitForTransactionReceipt(tx_hash)
 
         return {"message": "Player registered successfully"}
+    
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-
-# Endpoint pour soumettre un mouvement
-@app.post("/submit-move")
-async def submit_move(move: MoveSubmission):
-    try:
-        # Convertir l'adresse en format checksum pour Ethereum
-        player_address = w3.toChecksumAddress(move.player)
-
-        # Soumettre le mouvement au contrat Ethereum
-        tx_hash = contract.functions.submitMove(move.moveHash).transact({'from': player_address})
-
-        # Attendre la confirmation de la transaction
-        w3.eth.waitForTransactionReceipt(tx_hash)
-
-        return {"message": "Move submitted successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
 
 # Point d'entrée pour exécuter le serveur
 if __name__ == "__main__":
