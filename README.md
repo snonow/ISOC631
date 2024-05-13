@@ -41,4 +41,4 @@ L'interaction avec le jeu se fait à travers une API REST. Les endpoints implém
 
 ## Auteur
 
-Ce projet a été développé par DEGOUEY Corentin ,SOLDAN Maxens, RENAND Baptiste, BERCIER Thomas, WHILLEM Arno.
+Ce projet a été développé par DEGOUEY Corentin - SOLDAN Maxens - RENAND Baptiste - BERCIER Thomas - WHILLEM Arno.
