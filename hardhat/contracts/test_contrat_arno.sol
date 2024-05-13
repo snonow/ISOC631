@@ -2,12 +2,12 @@
 pragma solidity ^0.8.24;
 
 contract AxelrodGame {
-    address public player1;
-    address public player2;
-    uint256 public constant FINNEY = 1e15; // 1 finney en wei
-    uint256 public constant betMin = FINNEY; // Mise minimale = 1 finney     
-    uint256 public constant revealTimeout=600;
-    uint256 public initialBet;
+    address private player1;
+    address private player2;
+    uint256 private constant FINNEY = 1e15; // 1 finney en wei
+    uint256 private constant betMin = FINNEY; // Mise minimale = 1 finney     
+    uint256 private constant revealTimeout=600;
+    uint256 private initialBet;
 
     enum Move {Cooperate, Defect}
     struct Player {
@@ -16,7 +16,7 @@ contract AxelrodGame {
         uint256 bet;
     }
 
-    mapping(address => Player) public players;
+    mapping(address => Player) private players;
 
     event GameStarted(address player1, address player2, uint256 bet);
     event MoveSubmitted(address player);
@@ -108,13 +108,43 @@ contract AxelrodGame {
     function getContractBalance() external view returns (uint256) {
         return address(this).balance;
     }
+    function whoAmI() public view returns (uint8) {
+        if (msg.sender == player1) {
+            return 1;
+        } else if (msg.sender == player2) {
+            return 2;
+        } else {
+            return 0;
+        }
+    }
+
+    function bothPlayed() public view returns (bool) {
+        return (players[player1].moveHash != bytes32(0) && players[player2].moveHash != bytes32(0));
+    }
+
+    function bothRevealed() public view returns (bool) {
+        return (players[player1].revealed && players[player2].revealed);
+    }
+
+    function revealTimeLeft() public view returns (uint256) {
+        if (players[player1].moveHash == bytes32(0) || players[player2].moveHash == bytes32(0)) {
+            return revealTimeout; // Le timer n'a pas encore démarré
+        } else {
+            uint256 timeElapsed = block.timestamp - revealTimeout; // Temps écoulé depuis le début de la révélation
+            if (timeElapsed < 0) {
+                return revealTimeout + timeElapsed; // Temps restant avant la fin de la révélation
+            } else {
+                return 0; // La phase de révélation est terminée
+            }
+        }
+    }
+
    function avoir_movehash(string memory _password) external pure returns (bytes32) {
   
     
-    // Calculer le hachage SHA256 de la chaîne concaténée
-    bytes32 moveHash = keccak256(abi.encodePacked(_password));
+        // Calculer le hachage SHA256 de la chaîne concaténée
+        bytes32 moveHash = keccak256(abi.encodePacked(_password));
 
-    return moveHash;
-
-}
+        return moveHash;
+    }
 }
