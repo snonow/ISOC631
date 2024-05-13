@@ -46,44 +46,42 @@ contract AxelrodGame {
         require(players[msg.sender].moveHash == bytes32(0), "Move already submitted");
         players[msg.sender].moveHash = _moveHash;
         emit MoveSubmitted(msg.sender);
-
-        if (players[player1].moveHash != bytes32(0) && players[player2].moveHash != bytes32(0)) {
-            revealMoves();
-        }
     }
 
-    function revealMove(bytes32 _password) external {
+    function revealMove(string memory _password)  external {
         Player storage player = players[msg.sender];
         require(player.moveHash != bytes32(0), "Move not submitted");
         require(!player.revealed, "Move already revealed");
         require(keccak256(abi.encodePacked(_password)) == player.moveHash, "Invalid password");
-
         player.revealed = true;
-        if (players[player1].revealed && players[player2].revealed) {
-            revealMoves();
-        }
+        
     }
 
-    function revealMoves() private {
-        Player storage player1Data = players[player1];
-        Player storage player2Data = players[player2];
+    function getOutcome() external {
+        
+        if (players[player1].revealed && players[player2].revealed) {
+           
+            Player storage player1Data = players[player1];
+            Player storage player2Data = players[player2];
 
-        bytes32 player1MoveHash = player1Data.moveHash;
-        bytes32 player2MoveHash = player2Data.moveHash;
+            bytes32 player1MoveHash = player1Data.moveHash;
+            bytes32 player2MoveHash = player2Data.moveHash;
 
-        require(player1MoveHash != bytes32(0) && player2MoveHash != bytes32(0), "Moves not submitted");
+            require(player1MoveHash != bytes32(0) && player2MoveHash != bytes32(0), "Moves not submitted");
 
-        Move player1Move = Move(uint8(uint256(keccak256(abi.encodePacked(player1MoveHash, address(this)))) % 2));
-        Move player2Move = Move(uint8(uint256(keccak256(abi.encodePacked(player2MoveHash, address(this)))) % 2));
+            Move player1Move = Move(uint8(uint256(keccak256(abi.encodePacked(player1MoveHash, address(this)))) % 2));
+            Move player2Move = Move(uint8(uint256(keccak256(abi.encodePacked(player2MoveHash, address(this)))) % 2));
 
-        if (player1Move == Move.Cooperate && player2Move == Move.Cooperate) {
-            payOut(player1, player2, initialBet, initialBet);
-        } else if (player1Move == Move.Cooperate && player2Move == Move.Defect) {
-            payOut(player2, player1, initialBet * 2, 0);
-        } else if (player1Move == Move.Defect && player2Move == Move.Cooperate) {
-            payOut(player1, player2, 0, initialBet * 2);
-        } else {
-            payOut(address(0), address(0), 0, 0); // Both defect, no winner
+            if (player1Move == Move.Cooperate && player2Move == Move.Cooperate) {
+                payOut(player1, player2, initialBet, initialBet);
+            } else if (player1Move == Move.Cooperate && player2Move == Move.Defect) {
+                payOut(player2, player1, initialBet * 2, 0);
+            } else if (player1Move == Move.Defect && player2Move == Move.Cooperate) {
+                payOut(player1, player2,  initialBet * 2,0);
+            } else {
+                payOut(address(0), address(0), 0, 0); // Both defect, no winner
+            }
+
         }
     }
 
@@ -110,4 +108,13 @@ contract AxelrodGame {
     function getContractBalance() external view returns (uint256) {
         return address(this).balance;
     }
+   function avoir_movehash(string memory _password) external pure returns (bytes32) {
+  
+    
+    // Calculer le hachage SHA256 de la chaîne concaténée
+    bytes32 moveHash = keccak256(abi.encodePacked(_password));
+
+    return moveHash;
+
+}
 }
