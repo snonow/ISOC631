@@ -11,11 +11,12 @@ Pour que le projet fonctionne correctement, assurez-vous d'avoir installé les m
 - `fastapi` : Un framework web pour construire des APIs REST avec Python rapidement.
 - `pydantic` : Une bibliothèque pour la validation des données dans Python.
 - `web3` : Une bibliothèque Python pour se connecter à une blockchain Ethereum.
+- `sympy`
 
 Vous pouvez installer ces modules en utilisant `pip` avec la commande suivante :
 
 ```
-pip install fastapi pydantic web3
+pip install fastapi pydantic web3 sympy
 ```
 
 ## Phase 1 - Mise en Place du Contrat Intelligent
