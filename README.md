@@ -46,6 +46,7 @@ Ce projet a été développé par DEGOUEY Corentin - SOLDAN Maxens - RENAND Bapt
 
 ## Deployer le  contrat 
 Dans l'invité de commande :<br> 
+initialiser yarn : yarn <br>
 lancer le noeud local: npx hardhat node <br> 
 compile le contrat :npx hardhat compile <br> 
 deployer le contrat : yarn hardhat ignition deploy ./ignition/modules/AxelrodGame_contrat.js --network localhost
