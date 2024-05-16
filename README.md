@@ -11,11 +11,12 @@ Pour que le projet fonctionne correctement, assurez-vous d'avoir installé les m
 - `fastapi` : Un framework web pour construire des APIs REST avec Python rapidement.
 - `pydantic` : Une bibliothèque pour la validation des données dans Python.
 - `web3` : Une bibliothèque Python pour se connecter à une blockchain Ethereum.
+- `sympy`
 
 Vous pouvez installer ces modules en utilisant `pip` avec la commande suivante :
 
 ```
-pip install fastapi pydantic web3
+pip install fastapi pydantic web3 sympy
 ```
 
 ## Phase 1 - Mise en Place du Contrat Intelligent
@@ -46,6 +47,7 @@ Ce projet a été développé par DEGOUEY Corentin - SOLDAN Maxens - RENAND Bapt
 
 ## Deployer le  contrat 
 Dans l'invité de commande :<br> 
+initialiser yarn : yarn <br>
 lancer le noeud local: npx hardhat node <br> 
 compile le contrat :npx hardhat compile <br> 
 deployer le contrat : yarn hardhat ignition deploy ./ignition/modules/AxelrodGame_contrat.js --network localhost
