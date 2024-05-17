@@ -131,6 +131,32 @@ contract_abi = [
     },
     {
         "inputs": [],
+        "name": "getPlayer1Balance",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getPlayer2Balance",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "player1",
         "outputs": [
             {
@@ -156,3 +182,4 @@ contract_abi = [
         "type": "function"
     }
 ]
+

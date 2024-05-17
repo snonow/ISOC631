@@ -52,9 +52,10 @@ async def avoir_movehash(password: str = Query(...)):
 @app.get("/submit_move/")
 async def submit_move(player_address: str = Query(...), move_hash: str = Query(...)):
     try:
-        move_hash_bytes32 = bytes(move_hash, 'utf-8')[:32]
+        move_hash_bytes32 = bytes.fromhex(move_hash)
+        
         tx = contract.functions.submitMove(move_hash_bytes32).transact({'from': player_address})
-        return {"message": "Move submitted successfully", "transaction": tx.hex()}
+        return {"message": "Move submitted successfully", "transaction": tx.hex(),"Hahce":move_hash_bytes32.hex()}
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
@@ -66,7 +67,7 @@ async def submit_move(player_address: str = Query(...), move_hash: str = Query(.
 @app.get("/reveal_move/")
 async def reveal_move(player_address: str = Query(...), password: str = Query(...)):
     try:
-        tx = contract.functions.revealMove(password).call({'from': player_address})
+        tx = contract.functions.revealMove(password).transact({'from': player_address})
         return {"message": "Move revealed successfully"}
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
@@ -101,10 +102,18 @@ async def get_outcome():
     # Appeler la fonction bothRevealed du contrat Solidity
     try:
         result = contract.functions.getOutcome().call()
-        
+        return{"Jeu terminé "}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/get_contrat_balance/")
+async def get_balance():
+   
+    try:
+        result = contract.functions.getContractBalance().call()
+        return {"Balance:",result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/who_am_i/")
 async def who_am_i(player_address: str = Query(...)):

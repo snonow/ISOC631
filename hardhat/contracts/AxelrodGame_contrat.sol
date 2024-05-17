@@ -18,6 +18,8 @@ contract AxelrodGame_contrat {
 
     mapping(address => Player) private players;
 
+    event MoveRevealAttempt(address player, bytes32 moveHash, bytes32 providedHash, bool passwordCheck);
+
     event GameStarted(address player1, address player2, uint256 bet);
     event MoveSubmitted(address player);
     event GameEnded(address winner, uint256 winnings);
@@ -48,14 +50,20 @@ contract AxelrodGame_contrat {
         emit MoveSubmitted(msg.sender);
     }
 
-    function revealMove(string memory _password)  external {
-        Player storage player = players[msg.sender];
-        require(player.moveHash != bytes32(0), "Move not submitted");
-        require(!player.revealed, "Move already revealed");
-        require(keccak256(abi.encodePacked(_password)) == player.moveHash, 'player.moveHash');
-        player.revealed = true;
-        
-    }
+   function revealMove(string memory _password) external {
+    Player storage player = players[msg.sender];
+    require(player.moveHash != bytes32(0), "Move not submitted");
+    require(!player.revealed, "Move already revealed");
+    
+    // Convertir la chaîne de caractères en hachage
+    bytes32 hashedPassword = keccak256(abi.encodePacked(_password));
+    
+    // Vérifier si le hachage correspond à celui enregistré pour le joueur
+    require(hashedPassword == player.moveHash, 'Invalid password');
+    emit MoveRevealAttempt(msg.sender, player.moveHash, hashedPassword, true);
+    player.revealed = true;
+}
+
 
     function getOutcome() external {
         
@@ -147,4 +155,12 @@ contract AxelrodGame_contrat {
 
         return moveHash;
     }
+    function getPlayer1Balance() external view returns (uint256) {
+        return players[player1].bet;
+    }
+
+    function getPlayer2Balance() external view returns (uint256) {
+        return players[player2].bet;
+    }
+
 }
