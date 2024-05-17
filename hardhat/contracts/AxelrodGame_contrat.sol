@@ -52,7 +52,7 @@ contract AxelrodGame_contrat {
         Player storage player = players[msg.sender];
         require(player.moveHash != bytes32(0), "Move not submitted");
         require(!player.revealed, "Move already revealed");
-        require(keccak256(abi.encodePacked(_password)) == player.moveHash, "Invalid password");
+        require(keccak256(abi.encodePacked(_password)) == player.moveHash, 'player.moveHash');
         player.revealed = true;
         
     }

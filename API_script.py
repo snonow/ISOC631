@@ -43,16 +43,41 @@ async def avoir_movehash(password: str = Query(...)):
     try:
         result_bytes32 = contract.functions.avoir_movehash(password).call()
         # Convertir bytes32 en hexadécimal
-        result_hex = Web3.toHex(result_bytes32)
+        result_hex = bytes(result_bytes32, 'utf-8')
         return {"moveHash": result_hex}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+@app.get("/submit_move/")
+async def submit_move(player_address: str = Query(...), move_hash: str = Query(...)):
+    try:
+        move_hash_bytes32 = bytes(move_hash, 'utf-8')[:32]
+        tx = contract.functions.submitMove(move_hash_bytes32).transact({'from': player_address})
+        return {"message": "Move submitted successfully", "transaction": tx.hex()}
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+
+
+@app.get("/reveal_move/")
+async def reveal_move(player_address: str = Query(...), password: str = Query(...)):
+    try:
+        tx = contract.functions.revealMove(password).call({'from': player_address})
+        return {"message": "Move revealed successfully"}
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 # Définir les endpoints de votre API
 @app.get("/both_revealed/")
 async def both_revealed():
-    # Appeler la fonction bothRevealed de votre contrat Solidity
+    # Appeler la fonction bothRevealed du contrat Solidity
     try:
         result = contract.functions.bothRevealed().call()
         return {"bothRevealed": result}
@@ -60,11 +85,32 @@ async def both_revealed():
         raise HTTPException(status_code=500, detail=str(e))
 
 # Définir les endpoints de votre API
-@app.get("/who_am_i/")
-async def who_am_i():
-    # Appeler la fonction whoAmI de votre contrat Solidity
+@app.get("/both_played/")
+async def both_revealed():
+    # Appeler la fonction bothRevealed du contrat Solidity
     try:
-        result = contract.functions.whoAmI().call()
+        result = contract.functions.bothPlayed().call()
+        return {"bothPlayed": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+# Définir les endpoints de votre API
+@app.get("/get_outcome/")
+async def get_outcome():
+    # Appeler la fonction bothRevealed du contrat Solidity
+    try:
+        result = contract.functions.getOutcome().call()
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/who_am_i/")
+async def who_am_i(player_address: str = Query(...)):
+    try:
+        # Appelez la fonction whoAmI du contrat en utilisant call() pour lire la valeur
+        result = contract.functions.whoAmI().call({'from': player_address})
         return {"playerId": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
