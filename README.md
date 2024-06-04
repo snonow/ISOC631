@@ -38,15 +38,11 @@ Les "battles" entre les différents groupes détermineront quelle stratégie est
 
 L'interaction avec le jeu se fait à travers une API REST. Les endpoints implémentent les fonctionnalités disponibles ainsi que les variables d'état du jeu. Les participants doivent convenir des URLs correspondantes pour la phase 2.
 
-## Auteur
-
-Ce projet a été développé par DEGOUEY Corentin, SOLDAN Maxens, RENAND Baptiste, BERCIER Thomas et WHILLEM Arno.
-
 ## Déploiement du Contrat
 
 Pour déployer le contrat, suivez les étapes ci-dessous :
 
-1. Initialiser yarn :
+1. Initialiser yarn dans le dossier hardhat:
    ```bash
    yarn
    ```
@@ -62,10 +58,13 @@ Pour déployer le contrat, suivez les étapes ci-dessous :
    ```bash
    yarn hardhat ignition deploy ./ignition/modules/AxelrodGame_contrat.js --network localhost
    ```
-
 5. Récupérer l'adresse du contrat et la modifier dans le script `API_script.py`.
 
 6. Lancer l'API :
    ```bash
    uvicorn API_script:app --reload
    ```
+   ## Auteur
+
+Ce projet a été développé par DEGOUEY Corentin, SOLDAN Maxens, RENAND Baptiste, BERCIER Thomas et WHILLEM Arno.
+
